@@ -17,42 +17,44 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
-    // 🔐 PASSWORD ENCODER (BCrypt)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // 🔒 SECURITY FILTER CHAIN
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+            // 🔥 ENABLE CORS (IMPORTANT)
+            .cors(cors -> {})
+
             // Disable CSRF (JWT is stateless)
             .csrf(csrf -> csrf.disable())
 
-            // Make session stateless (JWT based auth)
+            // Stateless session
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
-            // Authorization rules
             .authorizeHttpRequests(auth -> auth
 
-                // ✅ PUBLIC APIs
+                // 🔥 ALLOW PREFLIGHT REQUESTS
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                // PUBLIC APIs
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/jobs/**").permitAll()
                 .requestMatchers("/api/applications/**").permitAll()
 
-                // 🔒 ADMIN APIs
+                // ADMIN APIs
                 .requestMatchers(HttpMethod.POST, "/api/jobs/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                // ❗ Everything else needs authentication
                 .anyRequest().authenticated()
             )
 
-            // JWT filter before username-password filter
+            // JWT filter
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
