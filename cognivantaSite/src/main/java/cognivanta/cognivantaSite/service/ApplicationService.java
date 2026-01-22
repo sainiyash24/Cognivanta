@@ -8,11 +8,15 @@ import cognivanta.cognivantaSite.exception.ResourceNotFoundException;
 import cognivanta.cognivantaSite.repository.JobApplicationRepository;
 import cognivanta.cognivantaSite.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,7 +50,6 @@ public class ApplicationService {
             throw new RuntimeException("Resume file is required");
         }
 
-        // ✅ NULL-SAFE filename check (PREVENT 500)
         String originalFilename = resumeFile.getOriginalFilename();
 
         if (originalFilename == null ||
@@ -55,8 +58,7 @@ public class ApplicationService {
         }
 
         // 🔴 GENERATE SAFE FILE NAME
-        String fileName =
-                UUID.randomUUID() + "_" + originalFilename;
+        String fileName = UUID.randomUUID() + "_" + originalFilename;
 
         String filePath =
                 FileStorageConfig.RESUME_UPLOAD_DIR + "/" + fileName;
@@ -92,5 +94,36 @@ public class ApplicationService {
 
         application.setStatus(status);
         applicationRepository.save(application);
+    }
+
+    // ✅ LOAD resume file as Resource (Download / View Resume) — UPDATED
+    public Resource loadResumeAsResource(Long applicationId) {
+
+        JobApplication application = applicationRepository.findById(applicationId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Application not found"));
+
+        String resumePath = application.getResumePath();
+
+        if (resumePath == null || resumePath.isBlank()) {
+            throw new ResourceNotFoundException("Resume path not found");
+        }
+
+        try {
+            Path filePath = Paths.get(resumePath)
+                    .toAbsolutePath()
+                    .normalize();
+
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new ResourceNotFoundException("Resume file not found on disk");
+            }
+
+            return resource;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load resume file");
+        }
     }
 }
