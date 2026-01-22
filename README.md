@@ -132,6 +132,7 @@ Method	Endpoint	Description
 POST	/api/jobs	                                     (Create a job)
 GET	/api/admin/jobs/{jobId}/applications	           (View applicants)
 PUT	/api/admin/applications/{id}/status	              (Update application status)
+GET /api/admin/applications/{NEW_ID}/resume           (Resume Download)
 ****************************************************************************************************************************************************************
 Resume Upload Handling
 Only PDF files allowed
@@ -141,6 +142,10 @@ Files saved on server with UUID-based unique names
 Directory auto-created if missing
 
 Secure file path stored in database
+
+
+Resume Download
+Resume download API (admin)
 *****************************************************************************************************************************************************************
  **Exception Handling**
 
@@ -164,8 +169,6 @@ Centralized error handling using @RestControllerAdvice:
 ✔ Admin vs Public access control
 *****************************************************************************************************************************************************************
  **Future Enhancements**
-
-Resume download API (admin)
 
 Pagination & filtering
 
