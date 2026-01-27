@@ -58,16 +58,19 @@ public class GlobalExceptionHandler {
 
     // 🔴 4. HANDLE ALL OTHER EXCEPTIONS (500)
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDTO> handleGenericException(
-            Exception ex) {
+public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex) {
 
-        ErrorResponseDTO errorResponse =
-                new ErrorResponseDTO(
-                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        "Something went wrong. Please try again."
-                );
+    // 🔥 VERY IMPORTANT — show real error in console
+    ex.printStackTrace();
 
-        return new ResponseEntity<>(errorResponse,
-                HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    ErrorResponseDTO errorResponse =
+            new ErrorResponseDTO(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    ex.getMessage()   // show real message
+            );
+
+    return new ResponseEntity<>(errorResponse,
+            HttpStatus.INTERNAL_SERVER_ERROR);
+}
+
 }

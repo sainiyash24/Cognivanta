@@ -46,10 +46,13 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/jobs/**").permitAll()
                 .requestMatchers("/api/applications/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/contact").permitAll()
+
 
                 // ADMIN APIs
-                .requestMatchers(HttpMethod.POST, "/api/jobs/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/jobs/**").hasRole("ADMIN")
+                
 
                 .anyRequest().authenticated()
             )
