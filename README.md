@@ -146,6 +146,10 @@ Secure file path stored in database
 
 Resume Download
 Resume download API (admin)
+
+Email Notification
+ Contact Confirmation Email send to user aboutrevert from company.
+ Contact information mail received to registered company email address.
 *****************************************************************************************************************************************************************
  **Exception Handling**
 
@@ -169,14 +173,7 @@ Centralized error handling using @RestControllerAdvice:
 ✔ Admin vs Public access control
 *****************************************************************************************************************************************************************
  **Future Enhancements**
-
-Pagination & filtering
-
-Email notifications
-
-Cloud storage (AWS S3)
-
-Frontend integration (React)
+Just need to add more features as per requirements
 ****************************************************************************************************************************************************************
 **Author**
 
